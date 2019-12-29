@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.mhssn.githubclient.model.Repository;
 import com.mhssn.githubclient.model.User;
-import com.mhssn.githubclient.model.resource.Response;
+import com.mhssn.githubclient.model.response.Response;
 import com.mhssn.githubclient.repository.database.UserDataRepositoryImpl;
 import com.mhssn.githubclient.repository.service.UserRemoteRepository;
 import com.mhssn.githubclient.repository.service.UserRemoteRepositoryImpl;

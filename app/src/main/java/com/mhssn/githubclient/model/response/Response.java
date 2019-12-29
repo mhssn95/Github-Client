@@ -1,4 +1,4 @@
-package com.mhssn.githubclient.model.resource;
+package com.mhssn.githubclient.model.response;
 
 public class Response<T> {
     private ResponseState state;

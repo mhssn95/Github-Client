@@ -4,8 +4,8 @@ import android.util.Log;
 
 import com.mhssn.githubclient.model.Repository;
 import com.mhssn.githubclient.model.User;
-import com.mhssn.githubclient.model.resource.Response;
-import com.mhssn.githubclient.model.resource.ResponseState;
+import com.mhssn.githubclient.model.response.Response;
+import com.mhssn.githubclient.model.response.ResponseState;
 
 import org.json.JSONException;
 

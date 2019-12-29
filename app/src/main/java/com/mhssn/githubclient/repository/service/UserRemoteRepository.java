@@ -1,7 +1,7 @@
 package com.mhssn.githubclient.repository.service;
 
 import com.mhssn.githubclient.model.Repository;
-import com.mhssn.githubclient.model.resource.Response;
+import com.mhssn.githubclient.model.response.Response;
 import com.mhssn.githubclient.model.User;
 
 import java.util.List;

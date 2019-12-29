@@ -19,7 +19,7 @@ import com.bumptech.glide.Glide;
 import com.mhssn.githubclient.R;
 import com.mhssn.githubclient.model.Repository;
 import com.mhssn.githubclient.model.User;
-import com.mhssn.githubclient.model.resource.Response;
+import com.mhssn.githubclient.model.response.Response;
 import com.mhssn.githubclient.repository.userrepository.UserRepository;
 import com.mhssn.githubclient.repository.userrepository.UserRepositoryImpl;
 
