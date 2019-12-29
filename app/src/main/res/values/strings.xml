@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Github Client</string>
+    <string name="add">Add</string>
+    <string name="type_github_user_name">Type github user name</string>
+    <string name="failed_to_add_user">Failed to add user</string>
+    <string name="failed_to_get_user_repositories">Failed to get user repositories</string>
+    <string name="users_list_is_empty">Users list is empty</string>
 </resources>

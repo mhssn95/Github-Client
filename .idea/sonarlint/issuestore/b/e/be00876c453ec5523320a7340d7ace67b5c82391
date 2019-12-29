@@ -1,0 +1,4 @@
+
+qsquid:MaximumInheritanceDepth"<This class has 6 parents which is greater than 5 authorized.( ½æÖüÿÿÿÿ8ÎËµÅó-
+wsquid:S1450"YRemove the "addUserFab" field and declare it as a local variable in the relevant methods.(º¹»¯8ÎËµÅó-
+Lsquid:S1068".Remove this unused "addUserFab" private field.(º¹»¯8ÎËµÅó-
