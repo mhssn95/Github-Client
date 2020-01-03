@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.mhssn.githubclient.R;
-import com.mhssn.githubclient.model.User;
+import com.mhssn.githubclient.model.GithubUser;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GithubUsersAdapter extends RecyclerView.Adapter<GithubUsersAdapter.GithubUserViewHolder> {
 
-    private ArrayList<User> usersList = new ArrayList<>();
+    private ArrayList<GithubUser> usersList = new ArrayList<>();
     private OnGithubUserClickedListener listener;
 
     public GithubUsersAdapter(OnGithubUserClickedListener listener) {
@@ -34,21 +34,21 @@ public class GithubUsersAdapter extends RecyclerView.Adapter<GithubUsersAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull GithubUserViewHolder holder, int position) {
-        User currentUser = usersList.get(position);
-        holder.userName.setText(currentUser.getName());
+        GithubUser currentGithubUser = usersList.get(position);
+        holder.userName.setText(currentGithubUser.getName());
         holder.userDescription.setText(new StringBuilder()
-                .append(currentUser.getBio() == null ? "" : currentUser.getBio())
+                .append(currentGithubUser.getBio() == null ? "" : currentGithubUser.getBio())
                 .append('\n')
-                .append(currentUser.getCompany() == null ? "" : currentUser.getCompany())
+                .append(currentGithubUser.getCompany() == null ? "" : currentGithubUser.getCompany())
         );
 
         Glide.with(holder.itemView)
-                .load(currentUser.getAvatarUrl())
+                .load(currentGithubUser.getAvatarUrl())
                 .into(holder.userImage);
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onClick(currentUser);
+                listener.onClick(currentGithubUser);
             }
         });
     }
@@ -59,9 +59,9 @@ public class GithubUsersAdapter extends RecyclerView.Adapter<GithubUsersAdapter.
     }
 
     public
-    void setUsers(List<User> users) {
+    void setUsers(List<GithubUser> githubUsers) {
         usersList.clear();
-        usersList.addAll(users);
+        usersList.addAll(githubUsers);
         notifyDataSetChanged();
     }
 
@@ -79,6 +79,6 @@ public class GithubUsersAdapter extends RecyclerView.Adapter<GithubUsersAdapter.
     }
 
     interface OnGithubUserClickedListener{
-        void onClick(User user);
+        void onClick(GithubUser githubUser);
     }
 }

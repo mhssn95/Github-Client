@@ -3,7 +3,8 @@ package com.mhssn.githubclient.repository.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import com.mhssn.githubclient.model.User;
+
+import com.mhssn.githubclient.model.GithubUser;
 
 class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -16,7 +17,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(User.CREATE_TABLE);
+        db.execSQL(GithubUser.CREATE_TABLE);
     }
 
     @Override

@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class User implements Parcelable {
+public class GithubUser implements Parcelable {
     public static final String TABLE_NAME = "users";
 
     public static final String COLUMN_ID = "id";
@@ -35,7 +35,7 @@ public class User implements Parcelable {
     private String company;
     private String avatarUrl;
 
-    public User(long userId, String username, String name, String bio, String company, String avatarUrl) {
+    public GithubUser(long userId, String username, String name, String bio, String company, String avatarUrl) {
         this.userId = userId;
         this.username = username;
         this.name = name;
@@ -68,7 +68,7 @@ public class User implements Parcelable {
         return avatarUrl;
     }
 
-    public static User fromJson(String json) throws JSONException {
+    public static GithubUser fromJson(String json) throws JSONException {
         JSONObject jsonUser = new JSONObject(json);
         int id = jsonUser.getInt("id");
         String username = jsonUser.getString("login");
@@ -76,7 +76,7 @@ public class User implements Parcelable {
         String bio = jsonUser.isNull("bio") ? null : jsonUser.getString("bio");
         String company = jsonUser.isNull("company") ? null : jsonUser.getString("company");
         String avatarUrl = jsonUser.getString("avatar_url");
-        return new User(id, username, name, bio, company, avatarUrl);
+        return new GithubUser(id, username, name, bio, company, avatarUrl);
     }
 
 
@@ -95,7 +95,7 @@ public class User implements Parcelable {
         dest.writeString(this.avatarUrl);
     }
 
-    protected User(Parcel in) {
+    protected GithubUser(Parcel in) {
         this.userId = in.readLong();
         this.username = in.readString();
         this.name = in.readString();
@@ -104,15 +104,15 @@ public class User implements Parcelable {
         this.avatarUrl = in.readString();
     }
 
-    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+    public static final Parcelable.Creator<GithubUser> CREATOR = new Parcelable.Creator<GithubUser>() {
         @Override
-        public User createFromParcel(Parcel source) {
-            return new User(source);
+        public GithubUser createFromParcel(Parcel source) {
+            return new GithubUser(source);
         }
 
         @Override
-        public User[] newArray(int size) {
-            return new User[size];
+        public GithubUser[] newArray(int size) {
+            return new GithubUser[size];
         }
     };
 }

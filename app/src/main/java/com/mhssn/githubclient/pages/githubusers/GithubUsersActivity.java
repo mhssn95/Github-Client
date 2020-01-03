@@ -17,10 +17,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mhssn.githubclient.R;
-import com.mhssn.githubclient.model.User;
+import com.mhssn.githubclient.model.GithubUser;
 import com.mhssn.githubclient.pages.githubrepositories.GithubRepositoriesActivity;
-import com.mhssn.githubclient.repository.userrepository.UserRepository;
-import com.mhssn.githubclient.repository.userrepository.UserRepositoryImpl;
+import com.mhssn.githubclient.repository.UserRepository;
 
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class GithubUsersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_github_users);
 
-        userRepository = UserRepositoryImpl.getInstance(this);
+        userRepository = UserRepository.getInstance(this);
         usersList = findViewById(R.id.rv_users);
         addUserFab = findViewById(R.id.fab_add_user);
         swipeRefresh = findViewById(R.id.swipe_refresh);
@@ -77,8 +76,8 @@ public class GithubUsersActivity extends AppCompatActivity {
         alert.show();
     }
 
-    private void setUsers(List<User> users) {
-        if (users.size() == 0) {
+    private void setUsers(List<GithubUser> githubUsers) {
+        if (githubUsers.size() == 0) {
             listIsEmptyLayout.setVisibility(View.VISIBLE);
             usersList.setVisibility(View.GONE);
         }
@@ -87,31 +86,31 @@ public class GithubUsersActivity extends AppCompatActivity {
             usersList.setVisibility(View.VISIBLE);
         }
         swipeRefresh.setRefreshing(false);
-        usersAdapter.setUsers(users);
+        usersAdapter.setUsers(githubUsers);
     }
 
-    private class GetUsersAsyncTask extends AsyncTask<Void, Void, List<User>> {
+    private class GetUsersAsyncTask extends AsyncTask<Void, Void, List<GithubUser>> {
 
         @Override
-        protected List<User> doInBackground(Void... voids) {
+        protected List<GithubUser> doInBackground(Void... voids) {
             return userRepository.getUsers();
         }
 
         @Override
-        protected void onPostExecute(List<User> users) {
-            setUsers(users);
+        protected void onPostExecute(List<GithubUser> githubUsers) {
+            setUsers(githubUsers);
         }
     }
 
-    private class AddUserAsyncTask extends AsyncTask<String, Void, Pair<List<User>, Boolean>> {
+    private class AddUserAsyncTask extends AsyncTask<String, Void, Pair<List<GithubUser>, Boolean>> {
         @Override
-        protected Pair<List<User>, Boolean> doInBackground(String... strings) {
+        protected Pair<List<GithubUser>, Boolean> doInBackground(String... strings) {
             boolean added = userRepository.addUser(strings[0]);
             return new Pair<>(userRepository.getUsers(), added);
         }
 
         @Override
-        protected void onPostExecute(Pair<List<User>, Boolean> pair) {
+        protected void onPostExecute(Pair<List<GithubUser>, Boolean> pair) {
             if (!pair.second) {
                 Toast.makeText(GithubUsersActivity.this, R.string.failed_to_add_user, Toast.LENGTH_SHORT).show();
             }

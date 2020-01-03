@@ -17,17 +17,16 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.mhssn.githubclient.R;
-import com.mhssn.githubclient.model.Repository;
-import com.mhssn.githubclient.model.User;
+import com.mhssn.githubclient.model.GithubRepository;
+import com.mhssn.githubclient.model.GithubUser;
 import com.mhssn.githubclient.model.response.Response;
-import com.mhssn.githubclient.repository.userrepository.UserRepository;
-import com.mhssn.githubclient.repository.userrepository.UserRepositoryImpl;
+import com.mhssn.githubclient.repository.UserRepository;
 
 import java.util.List;
 
 public class GithubRepositoriesActivity extends AppCompatActivity {
 
-    private User currentUser;
+    private GithubUser currentGithubUser;
     private ImageView userImage;
     private TextView userName;
     private TextView userDescription;
@@ -41,7 +40,7 @@ public class GithubRepositoriesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_github_repositories);
 
-        userRepository = UserRepositoryImpl.getInstance(this);
+        userRepository = UserRepository.getInstance(this);
         userImage = findViewById(R.id.img_user);
         userName = findViewById(R.id.tv_username);
         userDescription = findViewById(R.id.tv_user_desc);
@@ -55,21 +54,21 @@ public class GithubRepositoriesActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new GetUserRepositories().execute(currentUser.getUsername());
+        new GetUserRepositories().execute(currentGithubUser.getUsername());
     }
 
     private void loadUser() {
-        currentUser = getIntent().getParcelableExtra("user");
+        currentGithubUser = getIntent().getParcelableExtra("user");
 
-        userName.setText(currentUser.getName());
+        userName.setText(currentGithubUser.getName());
         userDescription.setText(new StringBuilder()
-                .append(currentUser.getBio() == null ? "" : currentUser.getBio())
+                .append(currentGithubUser.getBio() == null ? "" : currentGithubUser.getBio())
                 .append('\n')
-                .append(currentUser.getCompany() == null ? "" : currentUser.getCompany())
+                .append(currentGithubUser.getCompany() == null ? "" : currentGithubUser.getCompany())
         );
 
         Glide.with(this)
-                .load(currentUser.getAvatarUrl())
+                .load(currentGithubUser.getAvatarUrl())
                 .into(userImage);
 
     }
@@ -88,7 +87,7 @@ public class GithubRepositoriesActivity extends AppCompatActivity {
         startActivity(browserIntent);
     }
 
-    private class GetUserRepositories extends AsyncTask<String, Void, Response<List<Repository>>> {
+    private class GetUserRepositories extends AsyncTask<String, Void, Response<List<GithubRepository>>> {
 
         @Override
         protected void onPreExecute() {
@@ -98,12 +97,12 @@ public class GithubRepositoriesActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Response<List<Repository>> doInBackground(String... username) {
+        protected Response<List<GithubRepository>> doInBackground(String... username) {
             return userRepository.getRepositories(username[0]);
         }
 
         @Override
-        protected void onPostExecute(Response<List<Repository>> response) {
+        protected void onPostExecute(Response<List<GithubRepository>> response) {
             switch (response.getState()) {
                 case SUCCESS:
                     repositoriesAdapter.setRepositories(response.getData());

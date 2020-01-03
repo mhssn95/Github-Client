@@ -1,4 +1,4 @@
-package com.mhssn.githubclient.repository.service;
+package com.mhssn.githubclient.repository.remote;
 
 import java.io.BufferedReader;
 import java.io.IOException;

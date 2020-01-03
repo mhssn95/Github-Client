@@ -9,14 +9,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mhssn.githubclient.R;
-import com.mhssn.githubclient.model.Repository;
+import com.mhssn.githubclient.model.GithubRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GithubRepositoriesAdapter extends RecyclerView.Adapter<GithubRepositoriesAdapter.RepositoriesViewHolder> {
 
-    private ArrayList<Repository> repositoriesList = new ArrayList<>();
+    private ArrayList<GithubRepository> repositoriesList = new ArrayList<>();
     private OnGithubRepositoryClickedListener listener;
 
     public GithubRepositoriesAdapter(OnGithubRepositoryClickedListener listener) {
@@ -32,7 +32,7 @@ public class GithubRepositoriesAdapter extends RecyclerView.Adapter<GithubReposi
 
     @Override
     public void onBindViewHolder(@NonNull RepositoriesViewHolder holder, int position) {
-        Repository currentRepo = repositoriesList.get(position);
+        GithubRepository currentRepo = repositoriesList.get(position);
         holder.name.setText(currentRepo.getName());
         holder.description.setText(currentRepo.getDescription());
         holder.itemView.setOnClickListener(v -> {
@@ -47,7 +47,7 @@ public class GithubRepositoriesAdapter extends RecyclerView.Adapter<GithubReposi
         return repositoriesList.size();
     }
 
-    public void setRepositories(List<Repository> repositories) {
+    public void setRepositories(List<GithubRepository> repositories) {
         repositoriesList.clear();
         repositoriesList.addAll(repositories);
         notifyDataSetChanged();
@@ -65,6 +65,6 @@ public class GithubRepositoriesAdapter extends RecyclerView.Adapter<GithubReposi
     }
 
     interface OnGithubRepositoryClickedListener{
-        void onClick(Repository repository);
+        void onClick(GithubRepository githubRepository);
     }
 }
