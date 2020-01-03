@@ -4,8 +4,7 @@ import android.util.Log;
 
 import com.mhssn.githubclient.model.GithubRepository;
 import com.mhssn.githubclient.model.GithubUser;
-import com.mhssn.githubclient.model.response.Response;
-import com.mhssn.githubclient.model.response.ResponseState;
+import com.mhssn.githubclient.model.Response;
 
 import org.json.JSONException;
 
@@ -32,9 +31,9 @@ public class UserRemoteRepository extends GithubHttpsClient {
         try {
             String response = getResponse("users/" + userName);
             Log.d(TAG, "received user: " + response);
-            return new Response<>(ResponseState.SUCCESS, GithubUser.fromJson(response), null);
+            return new Response<>(true, GithubUser.fromJson(response), null);
         } catch (IOException | JSONException e) {
-            return new Response<>(ResponseState.FAILED, null, e.getLocalizedMessage());
+            return new Response<>(false, null, e.getLocalizedMessage());
         }
     }
 
@@ -42,9 +41,9 @@ public class UserRemoteRepository extends GithubHttpsClient {
         try {
             String response = getResponse("users/" +username + "/repos?per_page=10&sort=star");
             Log.d(TAG, "received repositories: " + response);
-            return new Response<>(ResponseState.SUCCESS, GithubRepository.getListFromJson(response), null);
+            return new Response<>(true, GithubRepository.getListFromJson(response), null);
         } catch (IOException | JSONException e) {
-            return new Response<>(ResponseState.FAILED, null, e.getLocalizedMessage());
+            return new Response<>(false, null, e.getLocalizedMessage());
         }
     }
 }

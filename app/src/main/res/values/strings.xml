@@ -5,4 +5,6 @@
     <string name="failed_to_add_user">Failed to add githubUser</string>
     <string name="failed_to_get_user_repositories">Failed to get githubUser repositories</string>
     <string name="users_list_is_empty">Users list is empty</string>
+    <string name="repositories_list_is_empty">Repositories list is empty</string>
+    <string name="sort">Sort</string>
 </resources>

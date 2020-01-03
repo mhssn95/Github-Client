@@ -16,11 +16,11 @@ public class UserDataRepository extends DatabaseHelper {
         super(context);
     }
 
-    public List<GithubUser> getAllUsers() {
+    public List<GithubUser> getAllUsers(String sort) {
         List<GithubUser> githubUsers = new ArrayList<>();
 
         String getAllUsersQuery = "SELECT * FROM " + GithubUser.TABLE_NAME + " ORDER BY " +
-                GithubUser.COLUMN_TIMESTAMP + " DESC";
+                GithubUser.COLUMN_TIMESTAMP + " "+ sort;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(getAllUsersQuery, null);
@@ -37,7 +37,7 @@ public class UserDataRepository extends DatabaseHelper {
                 githubUsers.add(githubUser);
             } while (cursor.moveToNext());
         }
-
+        cursor.close();
         db.close();
 
         return githubUsers;

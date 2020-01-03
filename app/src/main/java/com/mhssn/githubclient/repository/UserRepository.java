@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.mhssn.githubclient.model.GithubRepository;
 import com.mhssn.githubclient.model.GithubUser;
-import com.mhssn.githubclient.model.response.Response;
+import com.mhssn.githubclient.model.Response;
 import com.mhssn.githubclient.repository.database.UserDataRepository;
 import com.mhssn.githubclient.repository.remote.UserRemoteRepository;
 
@@ -28,20 +28,18 @@ public class UserRepository {
         return instance;
     }
 
-    public List<GithubUser> getUsers() {
-        return data.getAllUsers();
+    public List<GithubUser> getUsers(String sort) {
+        return data.getAllUsers(sort);
     }
 
     public boolean addUser(String username) {
         Response<GithubUser> response = remote.getUser(username);
-        switch (response.getState()) {
-            case SUCCESS:
-                data.insertUser(response.getData());
-                return true;
-            case FAILED:
-                return false;
+        if (response.isSuccess()) {
+            data.insertUser(response.getData());
+            return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     public Response<List<GithubRepository>> getRepositories(String username) {

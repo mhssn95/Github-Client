@@ -1,14 +1,19 @@
 package com.mhssn.githubclient.pages.githubusers;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,6 +37,7 @@ public class GithubUsersActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefresh;
     private LinearLayout listIsEmptyLayout;
     private UserRepository userRepository;
+    private String sort;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +52,15 @@ public class GithubUsersActivity extends AppCompatActivity {
         addUserFab.setOnClickListener(v -> showAddGithubUserDialog());
         swipeRefresh.setOnRefreshListener(() -> new GetUsersAsyncTask().execute());
         initRecyclerView();
+
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        sort = preferences.getString("SORT", "DESC");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        new GetUsersAsyncTask().execute();
+        fetchUsers();
     }
 
     private void initRecyclerView() {
@@ -76,12 +85,26 @@ public class GithubUsersActivity extends AppCompatActivity {
         alert.show();
     }
 
+    private void showSortDialog() {
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        String[] sortTypes = new String[]{"ASC", "DESC"};
+        AlertDialog alert = new AlertDialog.Builder(this)
+                .setItems(sortTypes, (dialog, which) -> {
+                    String sortType = sortTypes[which];
+                    editor.putString("SORT", sortType);
+                    editor.apply();
+                    sort = sortType;
+                    fetchUsers();
+                }).create();
+        alert.show();
+    }
+
     private void setUsers(List<GithubUser> githubUsers) {
         if (githubUsers.size() == 0) {
             listIsEmptyLayout.setVisibility(View.VISIBLE);
             usersList.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             listIsEmptyLayout.setVisibility(View.GONE);
             usersList.setVisibility(View.VISIBLE);
         }
@@ -89,11 +112,33 @@ public class GithubUsersActivity extends AppCompatActivity {
         usersAdapter.setUsers(githubUsers);
     }
 
+    private void fetchUsers() {
+        new GetUsersAsyncTask().execute();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_github_users_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case R.id.user_sort:
+                showSortDialog();
+                return true;
+        }
+        return false;
+    }
+
     private class GetUsersAsyncTask extends AsyncTask<Void, Void, List<GithubUser>> {
 
         @Override
         protected List<GithubUser> doInBackground(Void... voids) {
-            return userRepository.getUsers();
+            return userRepository.getUsers(sort);
         }
 
         @Override
@@ -106,7 +151,7 @@ public class GithubUsersActivity extends AppCompatActivity {
         @Override
         protected Pair<List<GithubUser>, Boolean> doInBackground(String... strings) {
             boolean added = userRepository.addUser(strings[0]);
-            return new Pair<>(userRepository.getUsers(), added);
+            return new Pair<>(userRepository.getUsers(sort), added);
         }
 
         @Override
