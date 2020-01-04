@@ -2,7 +2,6 @@ package com.mhssn.githubclient.pages.githubrepositories;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,8 +19,8 @@ import com.bumptech.glide.Glide;
 import com.mhssn.githubclient.R;
 import com.mhssn.githubclient.model.GithubRepository;
 import com.mhssn.githubclient.model.GithubUser;
-import com.mhssn.githubclient.model.Response;
 import com.mhssn.githubclient.repository.UserRepository;
+import com.mhssn.githubclient.model.DataCallBack;
 
 import java.util.List;
 
@@ -57,7 +56,18 @@ public class GithubRepositoriesActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new GetUserRepositories().execute(currentGithubUser.getUsername());
+        userRepository.getRepositories(currentGithubUser.getUsername(), new DataCallBack<List<GithubRepository>>() {
+            @Override
+            public void onSuccess(List<GithubRepository> data) {
+                setRepositories(data);
+            }
+
+            @Override
+            public void onError(String message) {
+                Toast.makeText(GithubRepositoriesActivity.this, message, Toast.LENGTH_SHORT).show();
+                loading.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void loadUser() {
@@ -98,32 +108,8 @@ public class GithubRepositoriesActivity extends AppCompatActivity {
             repositoriesList.setVisibility(View.VISIBLE);
             listIsEmptyLayout.setVisibility(View.GONE);
         }
+        loading.setVisibility(View.GONE);
         repositoriesAdapter.setRepositories(repositories);
-    }
-
-    private class GetUserRepositories extends AsyncTask<String, Void, Response<List<GithubRepository>>> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            loading.setVisibility(View.VISIBLE);
-            repositoriesList.setVisibility(View.GONE);
-        }
-
-        @Override
-        protected Response<List<GithubRepository>> doInBackground(String... username) {
-            return userRepository.getRepositories(username[0]);
-        }
-
-        @Override
-        protected void onPostExecute(Response<List<GithubRepository>> response) {
-            if (response.isSuccess()) {
-                setRepositories(response.getData());
-            } else {
-                Toast.makeText(GithubRepositoriesActivity.this, R.string.failed_to_get_user_repositories, Toast.LENGTH_SHORT).show();
-            }
-            loading.setVisibility(View.GONE);
-        }
     }
 
 }

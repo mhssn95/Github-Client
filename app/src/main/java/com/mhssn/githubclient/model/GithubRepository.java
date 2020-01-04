@@ -1,16 +1,14 @@
 package com.mhssn.githubclient.model;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.google.gson.annotations.SerializedName;
 
 public class GithubRepository {
 
+    @SerializedName("name")
     private String name;
+    @SerializedName("description")
     private String description;
+    @SerializedName("html_url")
     private String link;
 
     public GithubRepository(String name, String description, String link) {
@@ -29,19 +27,6 @@ public class GithubRepository {
 
     public String getLink() {
         return link;
-    }
-
-    public static List<GithubRepository> getListFromJson(String json) throws JSONException {
-        JSONArray jsonArray = new JSONArray(json);
-        List<GithubRepository> repositories = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            String name = jsonObject.getString("name");
-            String description = jsonObject.isNull("description") ? null : jsonObject.getString("description");
-            String url = jsonObject.getString("html_url");
-            repositories.add(new GithubRepository(name, description, url));
-        }
-        return repositories;
     }
 
 }

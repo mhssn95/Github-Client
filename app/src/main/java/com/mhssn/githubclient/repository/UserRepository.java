@@ -1,22 +1,32 @@
 package com.mhssn.githubclient.repository;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
+import com.mhssn.githubclient.model.DataCallBack;
 import com.mhssn.githubclient.model.GithubRepository;
 import com.mhssn.githubclient.model.GithubUser;
-import com.mhssn.githubclient.model.Response;
 import com.mhssn.githubclient.repository.database.UserDataRepository;
 import com.mhssn.githubclient.repository.remote.UserRemoteRepository;
 
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UserRepository {
 
     private static UserRepository instance;
+    private final Handler handler;
     private UserRemoteRepository remote;
     private UserDataRepository data;
 
     private UserRepository(Context context) {
+        handler = new Handler(Looper.getMainLooper());
         remote = UserRemoteRepository.getInstance();
         data = new UserDataRepository(context);
     }
@@ -28,21 +38,47 @@ public class UserRepository {
         return instance;
     }
 
-    public List<GithubUser> getUsers(String sort) {
-        return data.getAllUsers(sort);
+    public void getUsers(String sort, DataCallBack<List<GithubUser>> callback) {
+        Executor executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            List<GithubUser> users = data.getAllUsers(sort);
+            handler.post(() -> callback.onSuccess(users));
+        });
     }
 
-    public boolean addUser(String username) {
-        Response<GithubUser> response = remote.getUser(username);
-        if (response.isSuccess()) {
-            data.insertUser(response.getData());
-            return true;
-        } else {
-            return false;
-        }
+    public void addUser(String username, DataCallBack<Void> callback) {
+        Executor executor = Executors.newSingleThreadExecutor();
+        remote.getUser(username).enqueue(new Callback<GithubUser>() {
+            @Override
+            public void onResponse(Call<GithubUser> call, Response<GithubUser> response) {
+                executor.execute(() -> {
+                    if (response.isSuccessful()) {
+                        data.insertUser(response.body());
+                        handler.post(() -> callback.onSuccess(null));
+                    } else {
+                        handler.post(() -> callback.onError(response.message()));
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Call<GithubUser> call, Throwable t) {
+                callback.onError(t.getLocalizedMessage());
+            }
+        });
     }
 
-    public Response<List<GithubRepository>> getRepositories(String username) {
-        return remote.getRepositories(username);
+    public void getRepositories(String username, DataCallBack<List<GithubRepository>> dataCallBack) {
+        remote.getRepositories(username).enqueue(new Callback<List<GithubRepository>>() {
+            @Override
+            public void onResponse(Call<List<GithubRepository>> call, Response<List<GithubRepository>> response) {
+                dataCallBack.onSuccess(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<GithubRepository>> call, Throwable t) {
+                dataCallBack.onError(t.getLocalizedMessage());
+            }
+        });
     }
 }

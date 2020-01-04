@@ -3,36 +3,37 @@ package com.mhssn.githubclient.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+import com.google.gson.annotations.SerializedName;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@Entity(tableName = "users")
 public class GithubUser implements Parcelable {
-    public static final String TABLE_NAME = "users";
-
-    public static final String COLUMN_ID = "id";
-    public static final String COLUMN_USERNAME = "username";
-    public static final String COLUMN_NAME = "name";
-    public static final String COLUMN_BIO = "bio";
-    public static final String COLUMN_COMPANY = "company";
-    public static final String COLUMN_AVATAR_URL = "avatar_url";
-    public static final String COLUMN_TIMESTAMP = "timestamp";
-
-    public static final String CREATE_TABLE =
-            "CREATE TABLE " + TABLE_NAME + "("
-                    + COLUMN_ID + " INTEGER PRIMARY KEY,"
-                    + COLUMN_USERNAME + " TEXT,"
-                    + COLUMN_NAME + " TEXT,"
-                    + COLUMN_BIO + " TEXT,"
-                    + COLUMN_COMPANY + " TEXT,"
-                    + COLUMN_AVATAR_URL + " TEXT,"
-                    + COLUMN_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP"
-                    + ")";
-
+    @PrimaryKey
+    @NonNull
+    @ColumnInfo(name = "id")
+    @SerializedName("id")
     private long userId;
+    @ColumnInfo(name = "name")
+    @SerializedName("name")
     private String name;
+    @ColumnInfo(name = "username")
+    @SerializedName("login")
     private String username;
+    @ColumnInfo(name = "bio")
+    @SerializedName("bio")
     private String bio;
+    @ColumnInfo(name = "Company")
+    @SerializedName("company")
     private String company;
+    @ColumnInfo(name = "avatar_url")
+    @SerializedName("avatar_url")
     private String avatarUrl;
 
     public GithubUser(long userId, String username, String name, String bio, String company, String avatarUrl) {
@@ -68,18 +69,6 @@ public class GithubUser implements Parcelable {
         return avatarUrl;
     }
 
-    public static GithubUser fromJson(String json) throws JSONException {
-        JSONObject jsonUser = new JSONObject(json);
-        int id = jsonUser.getInt("id");
-        String username = jsonUser.getString("login");
-        String name = jsonUser.getString("name");
-        String bio = jsonUser.isNull("bio") ? null : jsonUser.getString("bio");
-        String company = jsonUser.isNull("company") ? null : jsonUser.getString("company");
-        String avatarUrl = jsonUser.getString("avatar_url");
-        return new GithubUser(id, username, name, bio, company, avatarUrl);
-    }
-
-
     @Override
     public int describeContents() {
         return 0;
@@ -95,7 +84,7 @@ public class GithubUser implements Parcelable {
         dest.writeString(this.avatarUrl);
     }
 
-    protected GithubUser(Parcel in) {
+    private GithubUser(Parcel in) {
         this.userId = in.readLong();
         this.username = in.readString();
         this.name = in.readString();

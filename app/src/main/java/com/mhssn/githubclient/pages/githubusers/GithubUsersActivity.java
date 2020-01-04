@@ -2,9 +2,7 @@ package com.mhssn.githubclient.pages.githubusers;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -25,6 +23,7 @@ import com.mhssn.githubclient.R;
 import com.mhssn.githubclient.model.GithubUser;
 import com.mhssn.githubclient.pages.githubrepositories.GithubRepositoriesActivity;
 import com.mhssn.githubclient.repository.UserRepository;
+import com.mhssn.githubclient.model.DataCallBack;
 
 import java.util.List;
 
@@ -50,7 +49,7 @@ public class GithubUsersActivity extends AppCompatActivity {
         swipeRefresh = findViewById(R.id.swipe_refresh);
         listIsEmptyLayout = findViewById(R.id.ll_list_is_empty);
         addUserFab.setOnClickListener(v -> showAddGithubUserDialog());
-        swipeRefresh.setOnRefreshListener(() -> new GetUsersAsyncTask().execute());
+        swipeRefresh.setOnRefreshListener(() -> fetchUsers());
         initRecyclerView();
 
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
@@ -80,7 +79,17 @@ public class GithubUsersActivity extends AppCompatActivity {
                     //Add github user
                     EditText newUsernameEditText = ((AlertDialog) dialog).findViewById(R.id.et_github_user_name);
                     String newUsername = newUsernameEditText.getText().toString();
-                    new AddUserAsyncTask().execute(newUsername);
+                    userRepository.addUser(newUsername, new DataCallBack<Void>() {
+                        @Override
+                        public void onSuccess(Void data) {
+                            fetchUsers();
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            Toast.makeText(GithubUsersActivity.this, message, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }).create();
         alert.show();
     }
@@ -113,7 +122,17 @@ public class GithubUsersActivity extends AppCompatActivity {
     }
 
     private void fetchUsers() {
-        new GetUsersAsyncTask().execute();
+        userRepository.getUsers(sort, new DataCallBack<List<GithubUser>>() {
+            @Override
+            public void onSuccess(List<GithubUser> data) {
+                setUsers(data);
+            }
+
+            @Override
+            public void onError(String message) {
+                Toast.makeText(GithubUsersActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -134,32 +153,4 @@ public class GithubUsersActivity extends AppCompatActivity {
         return false;
     }
 
-    private class GetUsersAsyncTask extends AsyncTask<Void, Void, List<GithubUser>> {
-
-        @Override
-        protected List<GithubUser> doInBackground(Void... voids) {
-            return userRepository.getUsers(sort);
-        }
-
-        @Override
-        protected void onPostExecute(List<GithubUser> githubUsers) {
-            setUsers(githubUsers);
-        }
-    }
-
-    private class AddUserAsyncTask extends AsyncTask<String, Void, Pair<List<GithubUser>, Boolean>> {
-        @Override
-        protected Pair<List<GithubUser>, Boolean> doInBackground(String... strings) {
-            boolean added = userRepository.addUser(strings[0]);
-            return new Pair<>(userRepository.getUsers(sort), added);
-        }
-
-        @Override
-        protected void onPostExecute(Pair<List<GithubUser>, Boolean> pair) {
-            if (!pair.second) {
-                Toast.makeText(GithubUsersActivity.this, R.string.failed_to_add_user, Toast.LENGTH_SHORT).show();
-            }
-            setUsers(pair.first);
-        }
-    }
 }
